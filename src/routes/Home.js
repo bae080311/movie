@@ -4,18 +4,30 @@ import Movie from "../components/Movie";
 function Home() {
   const [loading, setLoading] = useState(true);
   const [movies, setMovies] = useState([]);
+  
   const getMovies = async () => {
-    const json = await (
-      await fetch(
-        `https://yts.mx/api/v2/list_movies.json?minimum_rating=8.8&sort_by=year`
-      )
-    ).json();
-    setMovies(json.data.movies);
-    setLoading(false);
+    try {
+      const json = await (
+        await fetch(
+          `https://yts.mx/api/v2/list_movies.json?minimum_rating=8.8&sort_by=year`
+        )
+      ).json();
+  
+      if (json && json.data && json.data.movies) {
+        setMovies(json.data.movies);
+        setLoading(false);
+      } else {
+        console.error("영화 목록을 찾을 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("영화 목록을 가져오는 도중 오류가 발생했습니다:", error);
+    }
   };
+  
   useEffect(() => {
     getMovies();
   }, []);
+  
   return (
     <div>
       {loading ? (
